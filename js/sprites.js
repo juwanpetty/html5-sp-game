@@ -7,6 +7,10 @@ function Sprites(src, col, row, sourceSize, desiredSize) {
 
     this.image = new Image();
     this.image.src = src;
+
+    this.animationDelay = 0;
+    this.animationIndexCounter = 0;
+    this.animationCurrentFrame = 0;
 };
 
 Sprites.prototype.find = function() {
@@ -17,7 +21,7 @@ Sprites.prototype.findImage = function() {
     return this.image;
 }
 
-Sprites.prototype.play = function(frames, posX, posY) {
+Sprites.prototype.play = function(x, y, frames) {
 
     const image = this.find();
     const src = image.image;
@@ -25,30 +29,34 @@ Sprites.prototype.play = function(frames, posX, posY) {
     let desiredSize = image.desiredSize;
     let col = image.col;
     let row = image.row;
-  
-    // for (frameIndex = 0; frameIndex < frames.length; frameIndex++) {
-      
-    //     let counter = 0;
-            
-    //     for (let y = 0; y < row; y++) {
-    //         for (let x = 0; x < col; x++) {
-            
-    //             if (counter === frames[frameIndex]) {
-                    context.drawImage(
-                        src,
-                        frames * size,
-                        0 * size,
-                        size,
-                        size,
-                        posX,
-                        posY,
-                        desiredSize,
-                        desiredSize
-                    );
-    //             }
 
-    //             counter++;
-    //         }
-    //     }
-    // }
+    if (frames) {
+        if (this.animationDelay++ >= 5) {
+
+            this.animationDelay = 0;
+            this.animationIndexCounter++;
+
+            if (this.animationIndexCounter >= frames.length) {
+                this.animationIndexCounter = 0;
+            }
+
+            this.animationCurrentFrame = frames[this.animationIndexCounter];
+
+        }
+
+        let spriteSheetX = this.animationCurrentFrame % col;
+        let spriteSheetY = Math.floor(this.animationCurrentFrame / row);
+
+        context.drawImage(
+            src,
+            spriteSheetX * size,
+            spriteSheetY * size,
+            size,
+            size,
+            x,
+            y,
+            desiredSize,
+            desiredSize
+        );
+    }
 }
