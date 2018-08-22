@@ -1,17 +1,15 @@
 let context = document.querySelector("canvas").getContext("2d");
 
-let canvasWidth = document.documentElement.clientWidth;
-let canvasHeight = document.documentElement.clientHeight;
-
-// Sprite
-let playerSprite = new Sprites('img/rogueplayer.png', 8, 8, 32, 64);
-let mapSprite = new Sprites('img/overworld.png', 20, 20, 16, 64);
+// let canvasWidth = document.documentElement.clientWidth;
+// let canvasHeight = document.documentElement.clientHeight;
+let canvasWidth = 800;
+let canvasHeight = 600;
 
 // Camera
-let camera = new Cameras(0, 0, canvasWidth, canvasHeight);
+let camera = new Cameras(200, 200, 800, 600);
 
 // Map
-let overworld = new Maps(mapSprite.findImage(), 40, 36, 16, 20, 20, mapSprite.find().desiredSize);
+let overworld = new Maps('img/overworld.png', 40, 36, 16, 20, 20, 64);
 overworld.addLayer([
     0,0,0,0,0,0,0,200,201,201,201,201,201,201,201,201,201,201,202,0,
     0,0,0,1174,1175,1176,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -35,10 +33,11 @@ overworld.addLayer([
     0,0,0,0,0,0,0,0,0,0,484,484,524,525,526,484,484,524,525,526
 ]);
 
+// Character
 let player = new Characters('Player 1');
 
 // Movement Controls
-document.onkeydown = function(event) {
+document.onkeydown = event => {
     if(event.keyCode === 68)        //d
             player.pressingRight = true;
     else if(event.keyCode === 83)   //s
@@ -49,7 +48,7 @@ document.onkeydown = function(event) {
             player.pressingUp = true;
 }
 
-document.onkeyup = function(event) {
+document.onkeyup = event => {
     if(event.keyCode === 68)        //d
             player.pressingRight = false;
     else if(event.keyCode === 83)   //s
@@ -60,7 +59,16 @@ document.onkeyup = function(event) {
             player.pressingUp = false;
 } 
 
+document.onmousemove = event => {
+    let mouseX = event.clientX;
+    let mouseY = event.clientY;
 
+    mouseX -= player.x;
+    mouseY -= player.y;
+
+    // console.log(Math.atan2(mouseY, mouseX) / Math.PI * 180);
+    player.aimAngle = Math.atan2(mouseY, mouseX) / Math.PI * 180;
+}
 
 
 
@@ -68,15 +76,15 @@ const update = () => {
     window.requestAnimationFrame(update);
 
     // Get width and height on every frame 
-    context.canvas.width = document.documentElement.clientWidth;
-    context.canvas.height = document.documentElement.clientHeight;
+//     context.canvas.width = document.documentElement.clientWidth;
+//     context.canvas.height = document.documentElement.clientHeight;
 
     context.imageSmoothingEnabled = false;
 
     // update objects
-    camera.update();
     overworld.update(0, camera);
-    player.update(overworld);
+    player.update();
+    camera.update(player.x, player.y);
 }
 
 update();
