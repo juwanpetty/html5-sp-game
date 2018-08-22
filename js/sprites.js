@@ -1,12 +1,12 @@
 function Sprites(src, col, row, sourceSize, desiredSize) {
-    this.image = '';
+    this.src = '';
     this.col = col;
     this.row = row;
     this.size = sourceSize;
     this.desiredSize = desiredSize;
 
-    this.image = new Image();
-    this.image.src = src;
+    this.src = new Image();
+    this.src.src = src;
 
     this.animationDelay = 0;
     this.animationIndexCounter = 0;
@@ -18,13 +18,13 @@ Sprites.prototype.find = function() {
 }
 
 Sprites.prototype.findImage = function() {
-    return this.image;
+    return this.src;
 }
 
 Sprites.prototype.play = function(x, y, frames) {
 
     const image = this.find();
-    const src = image.image;
+    const src = image.src;
     let size = image.size;
     let desiredSize = image.desiredSize;
     let col = image.col;
@@ -45,7 +45,7 @@ Sprites.prototype.play = function(x, y, frames) {
         }
 
         let spriteSheetX = this.animationCurrentFrame % col;
-        let spriteSheetY = Math.floor(this.animationCurrentFrame / row);
+        let spriteSheetY = Math.floor(this.animationCurrentFrame / col);
 
         context.drawImage(
             src,
