@@ -1,4 +1,10 @@
-function Maps(src, sourceCol, sourceRow, sourceSize, mapCol, mapRow, mapSize) {
+import { Sprites } from './sprites';
+
+let context = document.querySelector("canvas").getContext("2d");
+let canvasWidth = 800;
+let canvasHeight = 600;
+
+export function Maps(src, sourceCol, sourceRow, sourceSize, mapCol, mapRow, mapSize) {
     this.image = new Sprites(src, sourceCol, sourceRow, sourceSize, mapSize);
     this.map = {
         col: '',
@@ -73,15 +79,15 @@ Maps.prototype.renderMap = function(layer, camera) {
     if (endCol > map.col) endCol = map.col;
     if (endRow > map.row) endRow = map.row;
 
-    for (r = startRow; r < endRow; r++) {
-        for (c = startCol; c < endCol; c++) {
+    for (let r = startRow; r < endRow; r++) {
+        for (let c = startCol; c < endCol; c++) {
 
             counter = 0;
             tile = map.getTile(layer, c, r);
 
             tileLoop: 
-            for (y = 0; y < image.row; y++) {
-                for (x = 0; x < image.col; x++) {
+            for (let y = 0; y < image.row; y++) {
+                for (let x = 0; x < image.col; x++) {
                     
                     counter++;
                     if (counter === tile) {
@@ -93,7 +99,7 @@ Maps.prototype.renderMap = function(layer, camera) {
                 }
             }
 
-            if (tile !== 0) { // 0 => empty tile
+            if (tile !== 0) { // 0 => empty tile            
                 context.drawImage(
                     image.src,          // image
                     startX,               // source x    

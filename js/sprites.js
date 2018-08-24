@@ -1,4 +1,6 @@
-function Sprites(src, col, row, sourceSize, desiredSize) {
+let context = document.querySelector("canvas").getContext("2d");
+
+export function Sprites(src, col, row, sourceSize, desiredSize) {
     this.src = '';
     this.col = col;
     this.row = row;
@@ -45,7 +47,7 @@ Sprites.prototype.play = function(x, y, frames) {
         }
 
         let spriteSheetX = this.animationCurrentFrame % col;
-        let spriteSheetY = Math.floor(this.animationCurrentFrame / col);
+        let spriteSheetY = Math.floor(this.animationCurrentFrame / row);
 
         context.drawImage(
             src,

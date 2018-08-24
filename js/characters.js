@@ -1,10 +1,17 @@
-function Characters(name) {
+import { Sprites } from './sprites';
+import playerImage from '../img/rogueplayer.png';
+
+let context = document.querySelector("canvas").getContext("2d");
+let canvasWidth = 800;
+let canvasHeight = 600;
+
+export function Characters(name) {
     // Player Stats
     this.name = name;
     this.health = 100;
     this.speed = 4;
 
-    this.image = new Sprites('img/rogueplayer.png', 10, 10, 32, 64);
+    this.image = new Sprites(playerImage, 10, 10, 32, 64);
 
     // Player State
     this.states = {
@@ -35,9 +42,9 @@ function Characters(name) {
     this.pressingRight = false;
 }
 
-Characters.prototype.update = function() {
+Characters.prototype.update = function(camera) {
     this.updatePosition();
-    this.draw();
+    this.draw(camera);
 }
 
 Characters.prototype.updatePosition = function() {
@@ -60,19 +67,19 @@ Characters.prototype.updatePosition = function() {
     // if (this.y > canvasHeight - this.height / 2) this.y = canvasHeight - this.height / 2;
 }   
 
-Characters.prototype.draw = function() {
+Characters.prototype.draw = function(camera) {
     context.save();
 
     if (this.state === this.states.idle) {
-        this.idle();
+        this.idle(camera);
     } else if (this.state === this.states.wander) {
-        this.wander();
+        this.wander(camera);
     } else if (this.state === this.states.alert) {
-        this.alert();
+        this.alert(camera);
     } else if (this.state === this.states.attack) {
-        this.attack();
+        this.attack(camera);
     } else if (this.state === this.states.death) {
-        this.death();
+        this.death(camera);
     }
 
     context.beginPath();
@@ -88,17 +95,17 @@ Characters.prototype.draw = function() {
         let mouseX = event.clientX;
         let mouseY = event.clientY;
     
-        mouseX -= Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2 - player.width / 2);
-        mouseY -= Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2 - player.height / 2);
+        mouseX -= Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2);
+        mouseY -= Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.height / 2);
     
         // console.log(Math.atan2(mouseY, mouseX) / Math.PI * 180);
-        player.aimAngle = Math.atan2(mouseY, mouseX) / Math.PI * 180;
+        this.aimAngle = Math.atan2(mouseY, mouseX) / Math.PI * 180;
     }
 
     context.restore();
 }
 
-Characters.prototype.idle = function() {
+Characters.prototype.idle = function(camera) {
     this.spriteIndex = this.states.idle;
 
     this.image.play(
@@ -123,7 +130,7 @@ Characters.prototype.idle = function() {
     }
 }
 
-Characters.prototype.wander = function() {
+Characters.prototype.wander = function(camera) {
     let frames = [];
 
     if (this.pressingUp) {
@@ -146,13 +153,13 @@ Characters.prototype.wander = function() {
     }
 }
 
-Characters.prototype.alert = function() {
+Characters.prototype.alert = function(camera) {
     console.log('Alert...');
 
     this.spriteIndex = this.states.wander;
 }
 
-Characters.prototype.attack = function() {
+Characters.prototype.attack = function(camera) {
     this.spriteIndex = this.states.attack;
     let frames = [];
 
@@ -188,14 +195,14 @@ Characters.prototype.attack = function() {
     }
 }
 
-Characters.prototype.death = function() {
+Characters.prototype.death = function(camera) {
     this.image.play(
         Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2), 
         Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.width / 2), 
         [70, 71, 72, 73, 74, 75]
     );
 
-    if (player.health > 0) {
+    if (this.health > 0) {
         this.state = this.states.idle;
     }
 }

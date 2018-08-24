@@ -1,4 +1,8 @@
-function Cameras(x, y, width, height) {
+let context = document.querySelector("canvas").getContext("2d");
+let canvasWidth = 800;
+let canvasHeight = 600;
+
+export function Cameras(x, y, width, height) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -14,7 +18,7 @@ Cameras.prototype.drawCamera = function() {
     context.save();
 
     context.beginPath();
-    context.rect(canvasWidth / 2 - camera.width / 2 , canvasHeight / 2 - camera.height / 2, this.width, this.height);
+    context.rect(canvasWidth / 2 - this.width / 2 , canvasHeight / 2 - this.height / 2, this.width, this.height);
     context.stroke(); 
     context.strokeStyle = '#FF0000';
 
