@@ -33,7 +33,7 @@ Sprites.prototype.play = function(x, y, frames, loop = true) {
     let row = image.row;
 
     if (frames) {
-        if (this.animationDelay++ >= 10) {
+        if (this.animationDelay++ >= 5) {
 
             this.animationDelay = 0;
             this.animationIndexCounter++;            
