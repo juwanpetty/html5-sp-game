@@ -199,7 +199,8 @@ Characters.prototype.death = function(camera) {
     this.image.play(
         Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2), 
         Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.width / 2), 
-        [70, 71, 72, 73, 74, 75]
+        [70, 71, 72, 73, 74, 75],
+        false
     );
 
     if (this.health > 0) {

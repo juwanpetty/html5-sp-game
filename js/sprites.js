@@ -23,7 +23,7 @@ Sprites.prototype.findImage = function() {
     return this.src;
 }
 
-Sprites.prototype.play = function(x, y, frames) {
+Sprites.prototype.play = function(x, y, frames, loop = true) {
 
     const image = this.find();
     const src = image.src;
@@ -33,14 +33,21 @@ Sprites.prototype.play = function(x, y, frames) {
     let row = image.row;
 
     if (frames) {
-        if (this.animationDelay++ >= 5) {
+        if (this.animationDelay++ >= 10) {
 
             this.animationDelay = 0;
-            this.animationIndexCounter++;
+            this.animationIndexCounter++;            
 
-            if (this.animationIndexCounter >= frames.length) {
+            if (this.animationIndexCounter >= frames.length && loop) {
                 this.animationIndexCounter = 0;
             }
+
+            // loop logic
+            if (this.animationIndexCounter === frames.length) {
+                this.animationIndexCounter = frames.length - 1;
+            }
+
+            console.log(this.animationIndexCounter);
 
             this.animationCurrentFrame = frames[this.animationIndexCounter];
 
