@@ -47,8 +47,6 @@ Sprites.prototype.play = function(x, y, frames, loop = true) {
                 this.animationIndexCounter = frames.length - 1;
             }
 
-            console.log(this.animationIndexCounter);
-
             this.animationCurrentFrame = frames[this.animationIndexCounter];
 
         }
