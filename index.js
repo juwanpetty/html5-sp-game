@@ -79,7 +79,92 @@ document.onmousemove = event => {
     player.aimAngle = Math.atan2(mouseY, mouseX) / Math.PI * 180;
 }
 
+let gamepadAPI = {
+    controller: {},
+    connect: function(event) {
+        gamepadAPI.controller = event.gamepad;
+        console.log('Controller connected:', event.gamepad);
+    },
+    disconnect: function(event) {
+        delete gamepadAPI.controller;
+        console.log('Controller disconnected', event.gamepad);
+    },
+    update: function() {
+        let gamepads = navigator.webkitGetGamePads ? navigator.webkitGetGamePads() : navigator.getGamepads()[0];
+        const threshold = 0.09;
+        
+        if (!gamepads) {
+            return;
+        }
 
+        context.beginPath();
+        context.moveTo(
+            Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2), 
+            Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)
+        );
+        context.lineTo(
+            ((Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2)) + (gamepads.axes[0]) * 128), 
+            ((Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)) + (gamepads.axes[1]) * 128)
+        );
+        context.stroke();
+
+        let gamepadX = gamepads.axes[0];
+        let gamepadY = gamepads.axes[1];
+
+        if (gamepadX < threshold && gamepadX > (-threshold)) {
+            gamepadX = 0;
+        }
+
+        if (gamepadY < threshold && gamepadY > (-threshold)) {
+            gamepadY = 0;
+        }
+
+        let aimAngle = Math.atan2(gamepadY, gamepadX) * (180 / Math.PI);
+
+        context.font = '20px Arial';
+        context.fillText(aimAngle, 10, 50);
+
+        // axis controls
+        player.x = player.x + (this.applyDeadZone(gamepads.axes[0], threshold) * player.speed);
+        player.y = player.y + (this.applyDeadZone(gamepads.axes[1], threshold) * player.speed);
+
+        context.fillText(
+            'X:' + this.applyDeadZone(gamepads.axes[0], threshold) * player.speed,
+            10, 
+            75
+        );
+        
+        context.fillText(
+            'Y:' + this.applyDeadZone(gamepads.axes[1], threshold) * player.speed,
+            10, 
+            100
+        );
+    },
+    buttonPressed: function(button) {
+        if (typeof(button) == "object") {
+            return button.pressed;
+        }
+
+        return button == 1.0;
+    },
+    applyDeadZone: function(number, threshold) {
+        let percentage = (Math.abs(number) - threshold) / (1 - threshold);
+
+        if (percentage < 0) {
+            percentage = 0;
+        }
+
+        return percentage * (number > 0 ? 1 : -1);
+    },
+    buttons: [],
+    buttonsCache: [],
+    buttonsStatus: [],
+    axesStatus: []
+};
+
+// connect and disconnect controller events
+window.addEventListener("gamepadconnected", gamepadAPI.connect);
+window.addEventListener("gamepaddisconnected", gamepadAPI.disconnect);
 
 const update = () => {
     window.requestAnimationFrame(update);
@@ -96,6 +181,8 @@ const update = () => {
     overworld.update(0, camera);
     player.update(camera);
     camera.update(player.x, player.y);
+
+    gamepadAPI.update();
 }
 
 update();

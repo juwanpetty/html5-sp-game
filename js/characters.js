@@ -99,7 +99,7 @@ Characters.prototype.draw = function(camera) {
         mouseY -= Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.height / 2);
     
         // console.log(Math.atan2(mouseY, mouseX) / Math.PI * 180);
-        this.aimAngle = Math.atan2(mouseY, mouseX) / Math.PI * 180;
+        this.aimAngle = Math.atan2(mouseY, mouseX) / (Math.PI * 180);
     }
 
     context.restore();
