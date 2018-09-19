@@ -48,24 +48,24 @@ let player = new Characters('Player 1');
 // Movement Controls
 document.onkeydown = event => {
     if(event.keyCode === 68)        //d
-            player.pressingRight = true;
+        player.pressingRight = true;
     else if(event.keyCode === 83)   //s
-            player.pressingDown = true;
+        player.pressingDown = true;
     else if(event.keyCode === 65) //a
-            player.pressingLeft = true;
+        player.pressingLeft = true;
     else if(event.keyCode === 87) // w
-            player.pressingUp = true;
+        player.pressingUp = true;
 }
 
 document.onkeyup = event => {
     if(event.keyCode === 68)        //d
-            player.pressingRight = false;
+        player.pressingRight = false;
     else if(event.keyCode === 83)   //s
-            player.pressingDown = false;
+        player.pressingDown = false;
     else if(event.keyCode === 65) //a
-            player.pressingLeft = false;
+        player.pressingLeft = false;
     else if(event.keyCode === 87) // w
-            player.pressingUp = false;
+        player.pressingUp = false;
 } 
 
 document.onmousemove = event => {
@@ -75,8 +75,10 @@ document.onmousemove = event => {
     mouseX -= player.x;
     mouseY -= player.y;
 
-    // console.log(Math.atan2(mouseY, mouseX) / Math.PI * 180);
-    player.aimAngle = Math.atan2(mouseY, mouseX) / Math.PI * 180;
+    console.log(Math.atan2(mouseY, mouseX) * (180 / Math.PI));
+    player.aimAngle = Math.atan2(mouseY, mouseX) * (180 / Math.PI);
+
+    context.fillText('Aim Angle: ' + (Math.atan2(mouseY, mouseX) * (180 / Math.PI)), 10, 50);
 }
 
 let gamepadAPI = {
@@ -112,59 +114,49 @@ let gamepadAPI = {
         let gamepadLeftX = gamepads.axes[0];
         let gamepadLeftY = gamepads.axes[1];
 
-        if (gamepadLeftX < threshold && gamepadLeftX > (-threshold)) {
-            gamepadLeftX = 0;
-        }
-
-        if (gamepadLeftY < threshold && gamepadLeftY > (-threshold)) {
-            gamepadLeftY = 0;
-        }
-
+        this.thresholdBounds(gamepadLeftX, threshold);
+        this.thresholdBounds(gamepadLeftY, threshold);
+        
         let aimAngleLeft = Math.atan2(gamepadLeftY, gamepadLeftX) * (180 / Math.PI);
 
         context.font = '20px Arial';
-        context.fillText(aimAngleLeft, 10, 50);
+        context.fillText('Aim Angle Left: ' + aimAngleLeft, 10, 50);
 
         let gamepadRightX = gamepads.axes[2];
         let gamepadRightY = gamepads.axes[5];
 
-        if (gamepadRightX < threshold && gamepadRightX > (-threshold)) {
-            gamepadRightX = 0;
-        }
-
-        if (gamepadRightY < threshold && gamepadRightY > (-threshold)) {
-            gamepadRightY = 0;
-        }
+        this.thresholdBounds(gamepadRightX, threshold);
+        this.thresholdBounds(gamepadRightY, threshold);
 
         let aimAngleRight = Math.atan2(gamepadRightY, gamepadRightX) * (180 / Math.PI);
 
-        context.fillText(aimAngleRight, 300, 50);
+        context.fillText('Aim Angle Right: ' + aimAngleRight, 400, 50);
 
         // axis controls
         player.x = player.x + (this.applyDeadZone(gamepads.axes[0], threshold) * player.speed);
         player.y = player.y + (this.applyDeadZone(gamepads.axes[1], threshold) * player.speed);
 
         context.fillText(
-            'X1:' + this.applyDeadZone(gamepads.axes[0], threshold) * player.speed,
+            'X1: ' + this.applyDeadZone(gamepads.axes[0], threshold) * player.speed,
             10, 
             75
         );
         
         context.fillText(
-            'Y1:' + this.applyDeadZone(gamepads.axes[1], threshold) * player.speed,
+            'Y1: ' + this.applyDeadZone(gamepads.axes[1], threshold) * player.speed,
             10, 
             100
         );
 
         context.fillText(
-            'X2:' + this.applyDeadZone(gamepads.axes[2], threshold) * player.speed,
-            300, 
+            'X2: ' + this.applyDeadZone(gamepads.axes[2], threshold) * player.speed,
+            400, 
             75
         );
         
         context.fillText(
-            'Y2:' + this.applyDeadZone(gamepads.axes[5], threshold) * player.speed,
-            300, 
+            'Y2: ' + this.applyDeadZone(gamepads.axes[5], threshold) * player.speed,
+            400, 
             100
         );
 
@@ -195,6 +187,11 @@ let gamepadAPI = {
         }
 
         return percentage * (number > 0 ? 1 : -1);
+    },
+    thresholdBounds: function(axes, threshold) {
+        if (axes < threshold && axes > (-threshold)) {
+            axes = 0;
+        }
     },
     buttons: [],
     buttonsCache: [],
