@@ -82,14 +82,14 @@ Characters.prototype.draw = function(camera) {
         this.death(camera);
     }
 
-    context.beginPath();
-    context.rect(
-        Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2), 
-        Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.width / 2), 
-        this.width, 
-        this.height
-    );
-    context.stroke();
+    // context.beginPath();
+    // context.rect(
+    //     Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2), 
+    //     Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.width / 2), 
+    //     this.width, 
+    //     this.height
+    // );
+    // context.stroke();
 
     document.onmousemove = event => {
         let mouseX = event.clientX;

@@ -106,39 +106,79 @@ let gamepadAPI = {
             ((Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2)) + (gamepads.axes[0]) * 128), 
             ((Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)) + (gamepads.axes[1]) * 128)
         );
+        context.strokeStyle = '#00ff00';
         context.stroke();
 
-        let gamepadX = gamepads.axes[0];
-        let gamepadY = gamepads.axes[1];
+        let gamepadLeftX = gamepads.axes[0];
+        let gamepadLeftY = gamepads.axes[1];
 
-        if (gamepadX < threshold && gamepadX > (-threshold)) {
-            gamepadX = 0;
+        if (gamepadLeftX < threshold && gamepadLeftX > (-threshold)) {
+            gamepadLeftX = 0;
         }
 
-        if (gamepadY < threshold && gamepadY > (-threshold)) {
-            gamepadY = 0;
+        if (gamepadLeftY < threshold && gamepadLeftY > (-threshold)) {
+            gamepadLeftY = 0;
         }
 
-        let aimAngle = Math.atan2(gamepadY, gamepadX) * (180 / Math.PI);
+        let aimAngleLeft = Math.atan2(gamepadLeftY, gamepadLeftX) * (180 / Math.PI);
 
         context.font = '20px Arial';
-        context.fillText(aimAngle, 10, 50);
+        context.fillText(aimAngleLeft, 10, 50);
+
+        let gamepadRightX = gamepads.axes[2];
+        let gamepadRightY = gamepads.axes[5];
+
+        if (gamepadRightX < threshold && gamepadRightX > (-threshold)) {
+            gamepadRightX = 0;
+        }
+
+        if (gamepadRightY < threshold && gamepadRightY > (-threshold)) {
+            gamepadRightY = 0;
+        }
+
+        let aimAngleRight = Math.atan2(gamepadRightY, gamepadRightX) * (180 / Math.PI);
+
+        context.fillText(aimAngleRight, 300, 50);
 
         // axis controls
         player.x = player.x + (this.applyDeadZone(gamepads.axes[0], threshold) * player.speed);
         player.y = player.y + (this.applyDeadZone(gamepads.axes[1], threshold) * player.speed);
 
         context.fillText(
-            'X:' + this.applyDeadZone(gamepads.axes[0], threshold) * player.speed,
+            'X1:' + this.applyDeadZone(gamepads.axes[0], threshold) * player.speed,
             10, 
             75
         );
         
         context.fillText(
-            'Y:' + this.applyDeadZone(gamepads.axes[1], threshold) * player.speed,
+            'Y1:' + this.applyDeadZone(gamepads.axes[1], threshold) * player.speed,
             10, 
             100
         );
+
+        context.fillText(
+            'X2:' + this.applyDeadZone(gamepads.axes[2], threshold) * player.speed,
+            300, 
+            75
+        );
+        
+        context.fillText(
+            'Y2:' + this.applyDeadZone(gamepads.axes[5], threshold) * player.speed,
+            300, 
+            100
+        );
+
+        context.beginPath();
+        context.moveTo(
+            Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2), 
+            Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)
+        );
+        context.lineTo(
+            ((Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2)) + (gamepads.axes[2]) * 128), 
+            ((Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)) + (gamepads.axes[5]) * 128)
+        );
+        context.strokeStyle = '#ff0000';
+        context.stroke();
     },
     buttonPressed: function(button) {
         if (typeof(button) == "object") {
