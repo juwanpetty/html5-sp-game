@@ -60,11 +60,7 @@ module.exports.controller = (function() {
                
                 if (typeof(axes) === "number") {
                     axes = `axes[${i}]`;
-
-                    if (typeof(axes) === "number") {
-                        axes = `axes[${i}]`;
-                        setAxes(axes, value);
-                    }
+                    setAxes(axes, value);
                 }
             }
         }
