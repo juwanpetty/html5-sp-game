@@ -1,9 +1,14 @@
 (function() {
     let controllers = {};
     let pressedButtons = {};
+    let pressedAxes = {};
 
     function setButtons(button, status) {
         pressedButtons[button] = status;
+    }
+
+    function setAxes(axes, value) {
+        pressedAxes[axes] = value;
     }
 
     function scanGamepads() {
@@ -47,6 +52,26 @@
                     }
                 }
             }
+
+            // update controller axes
+            for (let i = 0; i < controller.axes.length; i++) {
+                // buffer for controller sensitivity 
+                const threshold = 0.09;
+
+                let axes = controller.axes[i];
+                let value = axes;
+                let moved = (value > threshold || value < (-threshold));
+               
+                if (typeof(axes) === "number") {
+                    axes = `axes[${i}]`;
+
+                    if (moved) {
+                        setAxes(axes, value);
+                    } else {
+                        setAxes(axes, 0);
+                    }
+                }
+            }
         }
     }
 
@@ -69,6 +94,9 @@
     window.controller = {
         isPressed: function(button) {
             return pressedButtons[button];
+        },
+        isMoved: function(axes) {
+            return pressedAxes[axes];
         }
     };
 
