@@ -55,20 +55,15 @@ module.exports.controller = (function() {
 
             // update controller axes
             for (let i = 0; i < controller.axes.length; i++) {
-                // buffer for controller sensitivity 
-                const threshold = 0.09;
-
                 let axes = controller.axes[i];
                 let value = axes;
-                let moved = (value > threshold || value < (-threshold));
                
                 if (typeof(axes) === "number") {
                     axes = `axes[${i}]`;
 
-                    if (moved) {
+                    if (typeof(axes) === "number") {
+                        axes = `axes[${i}]`;
                         setAxes(axes, value);
-                    } else {
-                        setAxes(axes, 0);
                     }
                 }
             }
@@ -96,7 +91,17 @@ module.exports.controller = (function() {
             return pressedButtons[button];
         },
         isMoved: function(axes) {
-            return pressedAxes[axes];
+            // buffer for controller sensitivity
+            const threshold = 0.09;
+
+            let number = pressedAxes[axes];
+            let percentage = (Math.abs(number) - threshold) / (1 - threshold);
+
+            if (percentage < 0) {
+                percentage = 0;
+            }
+
+            return percentage * (number > 0 ? 1 : -1);
         }
     };
 
