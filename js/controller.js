@@ -82,7 +82,7 @@ module.exports.controller = (function() {
         console.log('Controller disconnected', event.gamepad);
     });
 
-    window.controller = {
+    window.gamepad = {
         isPressed: function(button) {
             return pressedButtons[button];
         },

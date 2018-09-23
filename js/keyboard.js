@@ -36,7 +36,7 @@ module.exports.keyboard = (function() {
         pressedKeys = {};
     });
 
-    window.input = {
+    window.key = {
         isDown: function(key) {
             return pressedKeys[key.toUpperCase()];
         }

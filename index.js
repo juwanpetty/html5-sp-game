@@ -221,6 +221,18 @@ const update = () => {
     camera.update(player.x, player.y);
 
     gamepadAPI.update();
+
+    if (key.isDown('DOWN') || key.isDown('s')) {
+        console.log('Keyboard key: S is pressed');
+    }
+
+    if (gamepad.isPressed('button[0]')) {
+        console.log('button[0] is pressed');
+    }
+
+    if (gamepad.isMoved('axes[0]')) {
+        console.log('axes[0] is moved');
+    }
 }
 
 update();
