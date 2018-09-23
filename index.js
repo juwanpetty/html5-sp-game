@@ -1,6 +1,9 @@
 import './scss/style.scss';
 import mapImage from './img/overworld.png';
 
+import { controller } from './js/controller';
+import { keyboard } from './js/keyboard';
+
 import { Cameras } from './js/cameras';
 import { Maps } from './js/Maps';
 import { Characters } from './js/Characters';
@@ -85,11 +88,9 @@ let gamepadAPI = {
     controller: {},
     connect: function(event) {
         gamepadAPI.controller = event.gamepad;
-        console.log('Controller connected:', event.gamepad);
     },
     disconnect: function(event) {
         delete gamepadAPI.controller;
-        console.log('Controller disconnected', event.gamepad);
     },
     update: function() {
         let gamepads = navigator.webkitGetGamePads ? navigator.webkitGetGamePads() : navigator.getGamepads()[0];

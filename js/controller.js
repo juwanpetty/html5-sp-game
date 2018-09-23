@@ -1,4 +1,4 @@
-(function() {
+module.exports.controller = (function() {
     let controllers = {};
     let pressedButtons = {};
     let pressedAxes = {};
