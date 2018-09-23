@@ -1,4 +1,4 @@
-(function() {
+module.exports.keyboard = (function() {
     var pressedKeys = {};
 
     function setKey(event, status) {
