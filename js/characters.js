@@ -1,5 +1,5 @@
 import { Sprites } from './sprites';
-import playerImage from '../img/rogueplayer.png';
+import playerImage from '../img/player.png';
 
 let context = document.querySelector("canvas").getContext("2d");
 let canvasWidth = 800;
@@ -9,9 +9,9 @@ export function Characters(name) {
     // Player Stats
     this.name = name;
     this.health = 100;
-    this.speed = 4;
+    this.speed = 5;
 
-    this.image = new Sprites(playerImage, 10, 10, 32, 64);
+    this.image = new Sprites(playerImage, 9, 9, 16, 48);
 
     // Player State
     this.states = {
@@ -43,29 +43,29 @@ export function Characters(name) {
 }
 
 Characters.prototype.update = function(camera) {
-    this.updatePosition();
-    this.draw(camera);
+    // this.updatePosition();
+    // this.draw(camera);
 }
 
-Characters.prototype.updatePosition = function() {
+// Characters.prototype.updatePosition = function() {
 
-    if (this.pressingUp)
-        this.y -= this.speed; 
+//     if (this.pressingUp)
+//         this.y -= this.speed; 
             
-    if (this.pressingRight)
-        this.x += this.speed;
+//     if (this.pressingRight)
+//         this.x += this.speed;
 
-    if (this.pressingDown)
-        this.y += this.speed; 
+//     if (this.pressingDown)
+//         this.y += this.speed; 
 
-    if (this.pressingLeft)
-        this.x -= this.speed;  
+//     if (this.pressingLeft)
+//         this.x -= this.speed;  
     
-    // if (this.x < this.width / 2) this.x = this.width / 2;
-    // if (this.x > canvasWidth - this.width / 2) this.x = canvasWidth - this.width / 2;
-    // if (this.y < this.height / 2) this.y = this.height / 2;
-    // if (this.y > canvasHeight - this.height / 2) this.y = canvasHeight - this.height / 2;
-}   
+//     // if (this.x < this.width / 2) this.x = this.width / 2;
+//     // if (this.x > canvasWidth - this.width / 2) this.x = canvasWidth - this.width / 2;
+//     // if (this.y < this.height / 2) this.y = this.height / 2;
+//     // if (this.y > canvasHeight - this.height / 2) this.y = canvasHeight - this.height / 2;
+// }   
 
 Characters.prototype.draw = function(camera) {
     context.save();
@@ -91,32 +91,78 @@ Characters.prototype.draw = function(camera) {
     // );
     // context.stroke();
 
-    document.onmousemove = event => {
-        let mouseX = event.clientX;
-        let mouseY = event.clientY;
+    // document.onmousemove = event => {
+    //     let mouseX = event.clientX;
+    //     let mouseY = event.clientY;
     
-        mouseX -= Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2);
-        mouseY -= Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.height / 2);
+    //     mouseX -= Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2);
+    //     mouseY -= Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.height / 2);
     
-        // console.log(Math.atan2(mouseY, mouseX) / Math.PI * 180);
-        this.aimAngle = Math.atan2(mouseY, mouseX) / (Math.PI * 180);
-    }
+    //     // console.log(Math.atan2(mouseY, mouseX) / Math.PI * 180);
+    //     this.aimAngle = Math.atan2(mouseY, mouseX) / (Math.PI * 180);
+    // }
 
     context.restore();
 }
 
-Characters.prototype.idle = function(camera) {
-    this.spriteIndex = this.states.idle;
+Characters.prototype.facing = function(state, angle) {
+
+    // character 8-direction angles
+    const facing = {
+        east:       (angle <= 22.5   || angle >= 337.5 ) ? true : false,
+        northEast:  (angle <  337.5  && angle >  292.5 ) ? true : false,
+        north:      (angle <= 292.5  && angle >= 247.5 ) ? true : false,
+        northWest:  (angle <  247.5  && angle >  202.5 ) ? true : false,
+        west:       (angle <= 202.5  && angle >= 157.5 ) ? true : false,
+        southWest:  (angle <  157.5  && angle >  112.5 ) ? true : false,
+        south:      (angle <= 112.5  && angle >= 67.5  ) ? true : false,
+        southEast:  (angle <  67.5   && angle >  22.5  ) ? true : false,
+    }
+
+    switch(state) {
+        case "idle": 
+            this.idle(facing);
+            break;
+        case "wander": 
+            this.wander(facing);
+            break;
+        default: 
+            this.idle(facing);
+    }
+}
+
+Characters.prototype.idle = function(facing) {
+    let frames = [];
+
+    if (facing.north) {
+        frames = [1];
+    } else if (facing.west) {
+        frames = [2];
+    } else if (facing.east) {
+        frames = [0];
+    } else if (facing.south) {
+        frames = [3];
+    } else if (facing.northWest) {
+        frames = [6];
+    } else if (facing.northEast) {
+        frames = [7];
+    } else if (facing.southWest) {
+        frames = [5];
+    } else if (facing.southEast) {
+        frames = [4];
+    } else {
+        frames = [3];
+    }
 
     this.image.play(
-        Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2), 
-        Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.width / 2), 
-        [0, 1, 2, 3, 4, 5, 6, 7]
+        Math.round(this.x - (this.x - canvasWidth / 2) + canvasWidth / 2 - (canvasWidth) / 2 - this.width / 2), 
+        Math.round(this.y - (this.y - canvasHeight / 2) + canvasHeight / 2 - (canvasHeight) / 2 - this.width / 2), 
+        frames
     );
 
-    if (this.pressingRight || this.pressingLeft || this.pressingDown || this.pressingUp) {
-        this.state = this.states.wander;
-    }
+    // if (this.pressingRight || this.pressingLeft || this.pressingDown || this.pressingUp) {
+    //     this.state = this.states.wander;
+    // }
 
     document.onmousedown = () => {
         if (this.health > 0) {
@@ -130,27 +176,38 @@ Characters.prototype.idle = function(camera) {
     }
 }
 
-Characters.prototype.wander = function(camera) {
+Characters.prototype.wander = function(facing) {
     let frames = [];
 
-    if (this.pressingUp) {
-        frames = [20, 21, 22, 23, 24, 25];
-    } else if (this.pressingLeft) {
-        frames = [80, 81, 82, 83, 84, 85];
-    } 
-    else {
-        frames = [10, 11, 12, 13, 14, 15];
+    if (facing.north) {
+        frames = [18, 19, 20, 21, 22];
+    } else if (facing.west) {
+        frames = [27, 28, 29, 30, 31];
+    } else if (facing.east) {
+        frames = [9, 10, 11, 12, 13];
+    } else if (facing.south) {
+        frames = [36, 37, 38, 39, 40];
+    } else if (facing.northWest) {
+        frames = [63, 64, 65, 66, 67];
+    } else if (facing.northEast) {
+        frames = [72, 73, 74, 75, 76];
+    } else if (facing.southWest) {
+        frames = [54, 55, 56, 57, 58];
+    } else if (facing.southEast) {
+        frames = [45, 46, 47, 48, 49];
+    } else {
+        frames = [36, 37, 38, 39, 40];
     }
 
     this.image.play(
-        Math.round(this.x - camera.x + canvasWidth / 2 - camera.width / 2 - this.width / 2), 
-        Math.round(this.y - camera.y + canvasHeight / 2 - camera.height / 2 - this.width / 2),
+        Math.round(this.x - (this.x - canvasWidth / 2) + canvasWidth / 2 - (canvasWidth) / 2 - this.width / 2), 
+        Math.round(this.y - (this.y - canvasHeight / 2) + canvasHeight / 2 - (canvasHeight) / 2 - this.width / 2),
         frames
     );
 
-    if (!this.pressingRight && !this.pressingLeft && !this.pressingDown && !this.pressingUp) {
-        this.state = this.states.idle;
-    }
+    // if (!this.pressingRight && !this.pressingLeft && !this.pressingDown && !this.pressingUp) {
+    //     this.state = this.states.idle;
+    // }
 }
 
 Characters.prototype.alert = function(camera) {
