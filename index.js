@@ -9,9 +9,6 @@ import { Maps } from './js/Maps';
 import { Characters } from './js/Characters';
 
 let context = document.querySelector("canvas").getContext("2d");
-
-// let canvasWidth = document.documentElement.clientWidth;
-// let canvasHeight = document.documentElement.clientHeight;
 let canvasWidth = 800;
 let canvasHeight = 600;
 context.font = '20px Arial';
@@ -50,23 +47,85 @@ let player = new Characters('Player 1');
 let aimAngleLeft = 0;
 let aimAngleRight = 0;
 let mouseAngle = 0;
+let keyboardAngle = 0;
 
 let gamepadAPI = {
-    update: function() {
-        window.onmousemove = event => {
-            const x1 = Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2);
-            const y1 = Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2);
-            const x2 = (event.clientX);
-            const y2 = (event.clientY);
+    mouseAngle(event) {
+        const x1 = Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2);
+        const y1 = Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2);
+        const x2 = (event.clientX);
+        const y2 = (event.clientY);
 
-            mouseAngle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+        mouseAngle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
 
-            if (mouseAngle < 0) {
-                mouseAngle = Math.abs(mouseAngle + 360);
-            }
-
-            player.aimAngle = mouseAngle;
+        if (mouseAngle < 0) {
+            mouseAngle = Math.abs(mouseAngle + 360);
         }
+
+        player.aimAngle = mouseAngle;
+    },
+    keyboardAngle() {
+        const isMovingDown = (key.isDown('DOWN') || key.isDown('s'));
+        const isMovingUp = (key.isDown('UP') || key.isDown('w'));
+        const isMovingLeft = (key.isDown('LEFT') || key.isDown('a'));
+        const isMovingRight = (key.isDown('RIGHT') || key.isDown('d'));
+
+        let xAxis = 0;
+        let yAxis = 0;
+
+        if (isMovingLeft) {
+            xAxis = -1;
+        }
+
+        if (isMovingRight) {
+            xAxis = 1;
+        }
+
+        if (isMovingUp) {
+            yAxis = -1;
+        }
+
+        if (isMovingDown) {
+            yAxis = 1;
+        }
+
+        if (isMovingDown && isMovingUp) {
+            yAxis = 0;
+        }
+
+        if (isMovingLeft && isMovingRight) {
+            yAxis = 0;
+        }
+
+        keyboardAngle = Math.atan2(yAxis, xAxis) * (180 / Math.PI);
+
+        if (keyboardAngle < 0) {
+            keyboardAngle = Math.abs(keyboardAngle + 360);
+        }
+
+        player.aimAngle = keyboardAngle;
+    },
+    update: function() {
+        const isMoving = gamepad.isMoved('axes[0]') || gamepad.isMoved('axes[1]');
+        const isAttacking = gamepad.isPressed('button[5]');
+        const isMovingDown = (key.isDown('DOWN') || key.isDown('s'));
+        const isMovingUp = (key.isDown('UP') || key.isDown('w'));
+        const isMovingLeft = (key.isDown('LEFT') || key.isDown('a'));
+        const isMovingRight = (key.isDown('RIGHT') || key.isDown('d'));
+
+        if (isMovingLeft || isMovingRight || isMovingUp || isMovingDown) {
+            this.keyboardAngle();
+        }
+
+        window.onmousedown = event => {
+            this.mouseAngle(event);
+        }  
+
+        window.onmousemove = event => {
+            if (event.buttons > 0) {
+                this.mouseAngle(event);
+            }
+        }   
 
         if (gamepad.isMoved('axes[1]') || gamepad.isMoved('axes[0]')) {
             aimAngleLeft = Math.atan2(gamepad.isMoved('axes[1]'), gamepad.isMoved('axes[0]')) * (180 / Math.PI);
@@ -87,13 +146,6 @@ let gamepadAPI = {
 
             player.aimAngle = aimAngleRight;
         }
-
-        const isMoving = gamepad.isMoved('axes[0]') || gamepad.isMoved('axes[1]');
-        const isAttacking = gamepad.isPressed('button[5]');
-        const isMovingDown = (key.isDown('DOWN') || key.isDown('s'));
-        const isMovingUp = (key.isDown('UP') || key.isDown('w'));
-        const isMovingLeft = (key.isDown('LEFT') || key.isDown('a'));
-        const isMovingRight = (key.isDown('RIGHT') || key.isDown('d'));
     
         if (isMoving && !isAttacking) {
             // axis controls
@@ -122,7 +174,7 @@ let gamepadAPI = {
         } else {
             player.facing('idle', player.aimAngle);
         }
-    
+        
         context.beginPath();
             context.moveTo(
                 Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2), 
@@ -132,8 +184,10 @@ let gamepadAPI = {
                 ((Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2)) + (gamepad.isMoved('axes[0]')) * 128), 
                 ((Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)) + (gamepad.isMoved('axes[1]')) * 128)
             );
+        context.save();
         context.strokeStyle = '#00ff00';
         context.stroke();
+        context.restore();
     
         context.beginPath();
             context.moveTo(
@@ -144,8 +198,10 @@ let gamepadAPI = {
                 ((Math.round(player.x - camera.x + canvasWidth / 2 - camera.width / 2)) + (gamepad.isMoved('axes[2]')) * 128), 
                 ((Math.round(player.y - camera.y + canvasHeight / 2 - camera.height / 2)) + (gamepad.isMoved('axes[5]')) * 128)
             );
+        context.save();
         context.strokeStyle = '#ff0000';
         context.stroke();
+        context.restore();
     }
 };
 
@@ -153,11 +209,6 @@ const update = () => {
     window.requestAnimationFrame(update);
 
     context.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    // Get width and height on every frame 
-    // context.canvas.width = document.documentElement.clientWidth;
-    // context.canvas.height = document.documentElement.clientHeight;
-
     context.imageSmoothingEnabled = false;
 
     // update objects
